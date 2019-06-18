@@ -3,7 +3,7 @@
 # Extract the source file path to column A and title metadata to column B
 echo Path to MS directory:
 read pathToMSDirectory
-echo Output filename without an extension or spaces:
+echo Output filename without extension or spaces:
 read pathToCSV
 exiftool -csv -Title $pathToMSDirectory > $pathToCSV".csv"
 
@@ -22,7 +22,8 @@ sed -i '' '$d' $pathToCSV"_final.csv"
 # Truncate the file path with only filenames left in column A
 sed -i '' 's:^\/.*sld:sld:' $pathToCSV"_final.csv"
 
-# Remove "MS name" (not the directory name) as recorded in TIFF header, e.g. Sinai Arabic 14, from title in column B
-echo MS name as recorded in TIFF header to be removed:
+# Remove "MS name" (not the directory name) as recorded in TIFF header, e.g. Sinai Arabic 14, from title in column B and prepend the titles' page counter with "f." standing for "folio" 
+echo MS name, as recorded in TIFF header, to be removed:
 read MSname
-sed -i "" "s:$MSname:f.:" $pathToCSV"_final.csv"
+sed -i "" "/^[^,]*_f_[^,_]*,/s/,$MSname /,f. /
+    s/,$MSname /,/" $pathToCSV"_final.csv"
